@@ -6,6 +6,7 @@ public class State implements Comparable<State> {
         int arraySize;
 
         State Parent;
+        GoalState goalState;
 
         String move;
 
@@ -24,8 +25,8 @@ public class State implements Comparable<State> {
         }
 
 
-        void calculateHeuristic(State goalState) {
-                int misplacedTiles = 0;
+        void calculateHeuristic() {
+                int misplacedTiles = 0, verticalDistance = 0;
                 int[][] targetAr = goalState.getAr();
                 /*for(int i = 1; i <= arraySize; ++i) {
                         for(int j = 1; j <= arraySize; ++j){
@@ -38,11 +39,22 @@ public class State implements Comparable<State> {
                 for(int i = 1; i <= arraySize; ++i) {
                         for(int j = 1; j <= arraySize; ++j){
                                 if(ar[i][j] != targetAr[i][j]) {
-                                        misplacedTiles += Math.abs(ar[i][j] - i) + 1;
+                                        /*int temp = Math.abs(ar[i][j] - i) + 1;
+                                        verticalDistance += Math.min(temp, arraySize - temp + 1);*/
+                                        int temp;
+                                        if(goalState.orientation == true) {     //vertical
+                                                int column = goalState.mapAr[ ar[i][j] ];
+                                                temp = Math.abs(column - j) + 1;
+                                        }
+                                        else {                                  //horizontal
+                                                int row = goalState.mapAr[ ar[i][j] ];
+                                                temp = Math.abs(row - i) + 1;
+                                        }
+                                        verticalDistance += Math.min(temp, arraySize - temp + 1);
                                 }
                         }
                 }
-                heuristicValue = numberOfMovesUsed + (float) misplacedTiles / (float) arraySize ;
+                heuristicValue = numberOfMovesUsed + (float) verticalDistance / (float) arraySize ;
         }
 
 
@@ -93,6 +105,7 @@ public class State implements Comparable<State> {
                 Parent = parent;
                 this.arraySize = parent.arraySize;
                 this.ar = new int[arraySize + 1][arraySize + 1];
+                this.goalState = Parent.goalState;
 
                 for(int i = 1; i <= arraySize; ++i) {
                         for(int j = 1; j <= arraySize; ++j){
@@ -113,6 +126,10 @@ public class State implements Comparable<State> {
                 System.out.println();
         }
 
+        public void setParentNull() {
+                Parent = null;
+        }
+
         public int getNumberOfMovesUsed() {
                 return numberOfMovesUsed;
         }
@@ -120,6 +137,14 @@ public class State implements Comparable<State> {
         public void setNumberOfMovesUsed() {
                 if(Parent != null)
                         this.numberOfMovesUsed = Parent.numberOfMovesUsed + 1;
+        }
+
+        public GoalState getGoalState() {
+                return goalState;
+        }
+
+        public void setGoalState(GoalState goalState) {
+                this.goalState = goalState;
         }
 
         public int[][] getAr() {

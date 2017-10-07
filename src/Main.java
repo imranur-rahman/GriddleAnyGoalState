@@ -7,6 +7,7 @@ import java.util.Stack;
 
 public class Main {
         static int arraySize;
+        static GoalState goalState[] = new GoalState[4];
 
         static boolean checkIfArraysAreEqual(int[][] ar1, int[][] ar2) {
                 for(int i = 1; i <= arraySize; ++i) {
@@ -16,6 +17,62 @@ public class Main {
                         }
                 }
                 return true;
+        }
+
+        static void generateGoalStates() {
+                for(int i = 0; i < 4; ++i)
+                        goalState[i] = new GoalState(arraySize);
+
+                //horizontal
+                for(int i = 1; i <= arraySize; ++i) {
+                        for(int j = 1; j <= arraySize; ++j) {
+                                //System.out.println(arraySize + " " + i + " " + j);
+                                goalState[0].ar[i][j] = i;
+                                goalState[1].ar[i][j] = arraySize - i + 1;
+                        }
+                }
+                //goalState[0].printAr();
+                //goalState[1].printAr();
+
+
+                //vertical
+                for(int j = 1; j <= arraySize; ++j) {
+                        for(int i = 1; i <= arraySize; ++i) {
+                                goalState[2].ar[i][j] = j;
+                                goalState[3].ar[i][j] = arraySize - j + 1;
+                        }
+                }
+                //goalState[2].printAr();
+                //goalState[3].printAr();
+
+                for(int i = 0; i < 4; ++i) {
+                        goalState[i].checkOrientation();
+                        goalState[i].mapGoalState();
+                }
+        }
+
+        static void addInPriorityQueue(State state, PriorityQueue<State> priorityQueue) {
+
+                State temp1 = new State(state);
+                temp1.setParentNull();
+                temp1.setGoalState(goalState[0]);
+                priorityQueue.add(temp1);
+
+                State temp2 = new State(state);
+                temp2.setParentNull();
+                temp2.setGoalState(goalState[1]);
+                priorityQueue.add(temp2);
+
+                State temp3 = new State(state);
+                temp3.setParentNull();
+                temp3.setGoalState(goalState[2]);
+                priorityQueue.add(temp3);
+
+                State temp4 = new State(state);
+                temp4.setParentNull();
+                temp4.setGoalState(goalState[3]);
+                priorityQueue.add(temp4);
+
         }
 
         public static void main(String[] args) throws FileNotFoundException, NullPointerException, InterruptedException {
@@ -42,14 +99,20 @@ public class Main {
                         }
                 }
 
-                State goalState = new State(arraySize);
+                /*State goalState = new State(arraySize);
                 for(int i = 1; i <= arraySize; ++i) {
                         for(int j = 1; j <= arraySize; ++j){
                                 goalState.ar[i][j] = scanner.nextInt();
                         }
-                }
+                }*/
+                generateGoalStates();
 
-                priorityQueue.add(initialState);
+
+
+                //priorityQueue.add(initialState);
+                addInPriorityQueue(initialState, priorityQueue);
+
+
 
                 State now = null;
 
@@ -64,20 +127,20 @@ public class Main {
                                 break;*/
                         /*if(now.ar == goalState.ar)
                                 break;*/
-                        if(checkIfArraysAreEqual(now.ar, goalState.ar))
+                        if(checkIfArraysAreEqual(now.ar, now.goalState.ar))
                                 break;
 
                         //generate all childs
                         for(int i = 1; i <= arraySize; ++i) {
                                 State temp1 = new State(now);
                                 temp1.rotateRowLeft(i);
-                                temp1.calculateHeuristic(goalState);
+                                temp1.calculateHeuristic();
                                 //temp1.printMove();
                                 //temp1.printAr();
 
                                 State temp2 = new State(now);
                                 temp2.rotateRowRight(i);
-                                temp2.calculateHeuristic(goalState);
+                                temp2.calculateHeuristic();
                                 //temp2.printMove();
                                 //temp2.printAr();
 
@@ -90,13 +153,13 @@ public class Main {
                         for(int i = 1; i <= arraySize; ++i) {
                                 State temp1 = new State(now);
                                 temp1.rotateColumnUp(i);
-                                temp1.calculateHeuristic(goalState);
+                                temp1.calculateHeuristic();
                                 //temp1.printMove();
                                 //temp1.printAr();
 
                                 State temp2 = new State(now);
                                 temp2.rotateColumnDown(i);
-                                temp2.calculateHeuristic(goalState);
+                                temp2.calculateHeuristic();
                                 //temp2.printMove();
                                 //temp2.printAr();
 
