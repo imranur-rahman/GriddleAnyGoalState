@@ -6,12 +6,12 @@ public class State implements Comparable<State> {
         int arraySize;
 
         State Parent;
-        GoalState goalState;
+        //GoalState goalState;
 
         String move;
 
         int numberOfMovesUsed = 0;
-        float heuristicValue;
+        float heuristicValue = Float.POSITIVE_INFINITY;
 
         @Override
         public int hashCode() {
@@ -25,17 +25,10 @@ public class State implements Comparable<State> {
         }
 
 
-        void calculateHeuristic() {
+        void calculateHeuristic(GoalState goalState) {
                 int misplacedTiles = 0, verticalDistance = 0;
                 int[][] targetAr = goalState.getAr();
-                /*for(int i = 1; i <= arraySize; ++i) {
-                        for(int j = 1; j <= arraySize; ++j){
-                                if(ar[i][j] != targetAr[i][j]) {
-                                        misplacedTiles++;
-                                }
-                        }
-                }
-                heuristicValue = numberOfMovesUsed + (float) misplacedTiles / (float) arraySize ;*/
+
                 for(int i = 1; i <= arraySize; ++i) {
                         for(int j = 1; j <= arraySize; ++j){
                                 if(ar[i][j] != targetAr[i][j]) {
@@ -51,10 +44,16 @@ public class State implements Comparable<State> {
                                                 temp = Math.abs(row - i) + 1;
                                         }
                                         verticalDistance += Math.min(temp, arraySize - temp + 1);
+                                        //System.out.println(goalState.orientation + " " + verticalDistance + " " + heuristicValue);
                                 }
                         }
                 }
-                heuristicValue = numberOfMovesUsed + (float) verticalDistance / (float) arraySize ;
+                heuristicValue = Math.min( heuristicValue, numberOfMovesUsed + (float) verticalDistance / (float) arraySize );
+        }
+
+        public void calculateHeuristicAll(GoalState[] goalStates) {
+                for(int i = 0; i < goalStates.length; ++i)
+                        calculateHeuristic(goalStates[i]);
         }
 
 
@@ -105,7 +104,7 @@ public class State implements Comparable<State> {
                 Parent = parent;
                 this.arraySize = parent.arraySize;
                 this.ar = new int[arraySize + 1][arraySize + 1];
-                this.goalState = Parent.goalState;
+                //this.goalState = Parent.goalState;
 
                 for(int i = 1; i <= arraySize; ++i) {
                         for(int j = 1; j <= arraySize; ++j){
@@ -139,13 +138,6 @@ public class State implements Comparable<State> {
                         this.numberOfMovesUsed = Parent.numberOfMovesUsed + 1;
         }
 
-        public GoalState getGoalState() {
-                return goalState;
-        }
-
-        public void setGoalState(GoalState goalState) {
-                this.goalState = goalState;
-        }
 
         public int[][] getAr() {
                 return ar;

@@ -13,6 +13,12 @@ public class GoalState extends State{
                 mapAr = new int[parent.arraySize + 1];
         }
 
+        public void printMap() {
+                for(int i = 1; i <= arraySize; ++i)
+                        System.out.print(mapAr[i] + " ");
+                System.out.println();
+        }
+
         public void checkOrientation() {
                 boolean isHorizontal = true;
                 for(int i = 1; i <= arraySize; ++i) {

@@ -31,8 +31,6 @@ public class Main {
                                 goalState[1].ar[i][j] = arraySize - i + 1;
                         }
                 }
-                //goalState[0].printAr();
-                //goalState[1].printAr();
 
 
                 //vertical
@@ -42,16 +40,17 @@ public class Main {
                                 goalState[3].ar[i][j] = arraySize - j + 1;
                         }
                 }
-                //goalState[2].printAr();
-                //goalState[3].printAr();
 
                 for(int i = 0; i < 4; ++i) {
                         goalState[i].checkOrientation();
                         goalState[i].mapGoalState();
+                        //goalState[i].printAr();
+                        //goalState[i].printMap();
+                        //System.out.println(goalState[i].orientation);
                 }
         }
 
-        static void addInPriorityQueue(State state, PriorityQueue<State> priorityQueue) {
+        /*static void addInPriorityQueue(State state, PriorityQueue<State> priorityQueue) {
 
                 State temp1 = new State(state);
                 temp1.setParentNull();
@@ -73,7 +72,7 @@ public class Main {
                 temp4.setGoalState(goalState[3]);
                 priorityQueue.add(temp4);
 
-        }
+        }*/
 
         public static void main(String[] args) throws FileNotFoundException, NullPointerException, InterruptedException {
 
@@ -109,8 +108,8 @@ public class Main {
 
 
 
-                //priorityQueue.add(initialState);
-                addInPriorityQueue(initialState, priorityQueue);
+                priorityQueue.add(initialState);
+                //addInPriorityQueue(initialState, priorityQueue);
 
 
 
@@ -122,25 +121,29 @@ public class Main {
 
                 while(priorityQueue.isEmpty() == false) {
 
+                        //System.out.println(priorityQueue.size());
+
                         now = priorityQueue.poll();
-                        /*if(now.equals(goalState))
-                                break;*/
-                        /*if(now.ar == goalState.ar)
-                                break;*/
-                        if(checkIfArraysAreEqual(now.ar, now.goalState.ar))
+
+                        boolean isGoalStateReached = false;
+                        for(int i = 0; i < 4; ++i) {
+                                if(checkIfArraysAreEqual(now.ar, goalState[i].ar))
+                                        isGoalStateReached = true;
+                        }
+                        if(isGoalStateReached)
                                 break;
 
                         //generate all childs
                         for(int i = 1; i <= arraySize; ++i) {
                                 State temp1 = new State(now);
                                 temp1.rotateRowLeft(i);
-                                temp1.calculateHeuristic();
+                                temp1.calculateHeuristicAll(goalState);
                                 //temp1.printMove();
                                 //temp1.printAr();
 
                                 State temp2 = new State(now);
                                 temp2.rotateRowRight(i);
-                                temp2.calculateHeuristic();
+                                temp2.calculateHeuristicAll(goalState);
                                 //temp2.printMove();
                                 //temp2.printAr();
 
@@ -153,13 +156,13 @@ public class Main {
                         for(int i = 1; i <= arraySize; ++i) {
                                 State temp1 = new State(now);
                                 temp1.rotateColumnUp(i);
-                                temp1.calculateHeuristic();
+                                temp1.calculateHeuristicAll(goalState);
                                 //temp1.printMove();
                                 //temp1.printAr();
 
                                 State temp2 = new State(now);
                                 temp2.rotateColumnDown(i);
-                                temp2.calculateHeuristic();
+                                temp2.calculateHeuristicAll(goalState);
                                 //temp2.printMove();
                                 //temp2.printAr();
 
